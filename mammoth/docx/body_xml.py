@@ -69,7 +69,6 @@ def _create_reader(numbering, content_types, relationships, styles, docx_file, f
         "w:lastRenderedPageBreak",
         "w:commentRangeStart",
         "w:commentRangeEnd",
-        "w:del",
         "w:footnoteRef",
         "w:endnoteRef",
         "w:pPr",
@@ -667,6 +666,17 @@ def _create_reader(numbering, content_types, relationships, styles, docx_file, f
 
         return content_result.map(handle_content)
 
+    def insertion(element):
+        return _read_xml_elements(element.children).map(
+            lambda children: documents.insertion(children=children))
+
+    def deletion(element):
+        return _read_xml_elements(element.children).map(
+            lambda children: documents.deletion(children=children))
+
+    def deleted_text(element):
+        return _success(documents.Text(_inner_text(element)))
+
     handlers = {
         "w:t": text,
         "w:r": run,
@@ -680,7 +690,9 @@ def _create_reader(numbering, content_types, relationships, styles, docx_file, f
         "w:tbl": table,
         "w:tr": table_row,
         "w:tc": table_cell,
-        "w:ins": read_child_elements,
+        "w:ins": insertion,
+        "w:del": deletion,
+        "w:delText": deleted_text,
         "w:object": read_child_elements,
         "w:smartTag": read_child_elements,
         "w:drawing": read_child_elements,

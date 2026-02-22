@@ -188,6 +188,21 @@ def hyperlink(children, href=None, anchor=None, target_frame=None):
 
 
 @cobble.data
+class Insertion(HasChildren):
+    pass
+
+@cobble.data
+class Deletion(HasChildren):
+    pass
+
+def insertion(children):
+    return Insertion(children=children)
+
+def deletion(children):
+    return Deletion(children=children)
+
+
+@cobble.data
 class Bookmark(Element):
     name = cobble.field()
 

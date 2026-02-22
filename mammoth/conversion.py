@@ -147,6 +147,14 @@ class _DocumentConverter(documents.element_visitor(args=1)):
             return html_paths.empty
 
 
+    def visit_insertion(self, insertion, context):
+        nodes = self._visit_all(insertion.children, context)
+        return [html.collapsible_element("ins", {}, nodes)]
+
+    def visit_deletion(self, deletion, context):
+        nodes = self._visit_all(deletion.children, context)
+        return [html.collapsible_element("del", {}, nodes)]
+
     def visit_text(self, text, context):
         return [html.text(text.value)]
 

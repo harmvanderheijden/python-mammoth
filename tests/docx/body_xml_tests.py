@@ -827,7 +827,7 @@ class CheckboxTests:
             ]),
         ]))
 
-    def test_when_structured_document_tag_checkbox_has_sdt_content_then_deleted_content_is_ignored(self):
+    def test_when_structured_document_tag_checkbox_has_sdt_content_then_deleted_content_is_preserved_in_deletion(self):
         element = xml_element("w:tbl", {}, [
             w_tr(
                 xml_element("w:sdt", {}, [
@@ -841,13 +841,13 @@ class CheckboxTests:
                             xml_element("w:p", {}, [
                                 xml_element("w:r", {}, [
                                     xml_element("w:t", {}, [
-                                        xml_text("☐"),
+                                        xml_text("\u2610"),
                                     ]),
                                 ]),
                                 xml_element("w:del", {}, [
                                     xml_element("w:r", {}, [
                                         xml_element("w:t", {}, [
-                                            xml_text("☐")
+                                            xml_text("\u2610")
                                         ])
                                     ])
                                 ]),
@@ -866,6 +866,11 @@ class CheckboxTests:
                     documents.paragraph([
                         documents.run([
                             documents.checkbox(checked=True),
+                        ]),
+                        documents.deletion(children=[
+                            documents.run([
+                                documents.text("\u2610"),
+                            ]),
                         ]),
                     ]),
                 ]),
@@ -1210,8 +1215,32 @@ class TableTests(object):
         assert_equal([expected_warning], result.messages)
 
 
-def test_children_of_w_ins_are_converted_normally():
-    _assert_children_are_converted_normally("w:ins")
+def test_children_of_w_ins_are_wrapped_in_insertion():
+    element = xml_element("w:p", {}, [
+        xml_element("w:ins", {}, [
+            xml_element("w:r")
+        ])
+    ])
+    assert_equal(
+        documents.paragraph([documents.insertion(children=[documents.run([])])]),
+        _read_and_get_document_xml_element(element)
+    )
+
+
+def test_children_of_w_del_are_wrapped_in_deletion():
+    element = xml_element("w:p", {}, [
+        xml_element("w:del", {}, [
+            xml_element("w:r", {}, [
+                xml_element("w:delText", {}, [
+                    xml_text("deleted text")
+                ])
+            ])
+        ])
+    ])
+    assert_equal(
+        documents.paragraph([documents.deletion(children=[documents.run([documents.text("deleted text")])])]),
+        _read_and_get_document_xml_element(element)
+    )
 
 def test_children_of_w_object_are_converted_normally():
     _assert_children_are_converted_normally("w:object")

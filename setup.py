@@ -8,10 +8,10 @@ def read(fname):
 
 
 setup(
-    name='mammoth',
+    name='mammoth-tc',
     version='1.11.0',
-    description='Convert Word documents from docx to simple and clean HTML and Markdown',
-    long_description=read("README"),
+    description='Convert Word documents from docx to simple and clean HTML and Markdown (with track changes support)',
+    long_description=read("README.md"),
     author='Michael Williamson',
     author_email='mike@zwobble.org',
     url='https://github.com/mwilliamson/python-mammoth',
